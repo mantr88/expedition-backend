@@ -26,3 +26,10 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+#AI
+docs
+.agents
+.claude
+.mcp.json
+boost.json
