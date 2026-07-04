@@ -63,7 +63,7 @@ vendor/bin/phpstan analyse # статичний аналіз (larastan, level 6)
 php artisan test           # Pest (локально — sqlite in-memory)
 ```
 
-CI (GitLab): Pint + PHPStan + Pest проти postgres/redis-сервісів — див. `.gitlab-ci.yml`.
+CI (GitHub Actions): Pint + PHPStan + Pest проти postgres/redis-сервісів — див. `.github/workflows/ci.yml`.
 
 ## Схема даних (ядро)
 
