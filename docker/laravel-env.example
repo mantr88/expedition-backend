@@ -1,0 +1,55 @@
+# Шаблон .env для локальної розробки (docker compose).
+# Скопіюйте в корінь проєкту як .env і згенеруйте ключ:
+#   cp docker/laravel-env.example .env && php artisan key:generate
+#
+# У контейнерах compose ці значення вже задані через environment-блок
+# (він має пріоритет над .env), тому шаблон потрібен для запуску artisan
+# із хоста та як довідник змінних.
+
+APP_NAME=Messenger
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:5173
+
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=excursion_db
+DB_USERNAME=root
+DB_PASSWORD=secret
+
+REDIS_CLIENT=predis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+
+SESSION_DRIVER=redis
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_DOMAIN=localhost
+CACHE_STORE=redis
+QUEUE_CONNECTION=redis
+
+SANCTUM_STATEFUL_DOMAINS=localhost:5173,localhost:8000,127.0.0.1:5173,127.0.0.1:8000
+
+BROADCAST_CONNECTION=reverb
+REVERB_APP_ID=messenger
+REVERB_APP_KEY=messenger-local-key
+REVERB_APP_SECRET=messenger-local-secret
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
+REVERB_SCHEME=http
+
+VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+VITE_REVERB_HOST=localhost
+VITE_REVERB_PORT="${REVERB_PORT}"
+VITE_REVERB_SCHEME="${REVERB_SCHEME}"
+
+MAIL_MAILER=log
