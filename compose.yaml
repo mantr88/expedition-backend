@@ -9,7 +9,7 @@ x-laravel-env: &laravel-env
   DB_CONNECTION: pgsql
   DB_HOST: postgres
   DB_PORT: "5432"
-  DB_DATABASE: excursion_db
+  DB_DATABASE: expedition_db
   DB_USERNAME: root
   DB_PASSWORD: secret
   REDIS_CLIENT: predis
@@ -58,7 +58,7 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: excursion_db
+      POSTGRES_DB: expedition_db
       POSTGRES_USER: root
       POSTGRES_PASSWORD: secret
     ports:
@@ -67,7 +67,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d excursion_db"]
+      test: ["CMD-SHELL", "pg_isready -U root -d expedition_db"]
       interval: 5s
       timeout: 3s
       retries: 10
