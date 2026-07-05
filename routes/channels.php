@@ -22,3 +22,10 @@ Broadcast::channel('channel.{channel}', function (User $user, Channel $channel):
 Broadcast::channel('user.{id}', function (User $user, string $id): bool {
     return (int) $user->id === (int) $id;
 });
+
+// Глобальний presence-online (фаза B3): фронт тримає підписку весь час
+// роботи застосунку, бекенд через нього визначає онлайн-статус для
+// сповіщень про згадки (ReverbPresence).
+Broadcast::channel('online', function (User $user): array {
+    return UserResource::make($user)->resolve();
+});

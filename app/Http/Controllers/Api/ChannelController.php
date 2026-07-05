@@ -20,8 +20,7 @@ class ChannelController extends Controller
     {
         $channels = Channel::query()
             ->whereHas('members', fn ($query) => $query->where('user_id', $request->user()->id))
-            ->with('myMembership')
-            ->withCount('members')
+            ->withViewerContext($request->user())
             ->orderBy('name')
             ->get();
 
@@ -34,39 +33,34 @@ class ChannelController extends Controller
     {
         $channel = $createChannel->handle($request->user(), $request->validated());
 
-        return ChannelResource::make($this->present($channel))
+        return ChannelResource::make($channel->loadViewerContext($request->user()))
             ->response()
             ->setStatusCode(201);
     }
 
-    public function show(Channel $channel): ChannelResource
+    public function show(Request $request, Channel $channel): ChannelResource
     {
         Gate::authorize('view', $channel);
 
-        return ChannelResource::make($this->present($channel));
+        return ChannelResource::make($channel->loadViewerContext($request->user()));
     }
 
     public function update(UpdateChannelRequest $request, Channel $channel, UpdateChannel $updateChannel): ChannelResource
     {
         $updateChannel->handle($channel, $request->validated());
 
-        return ChannelResource::make($this->present($channel));
+        return ChannelResource::make($channel->loadViewerContext($request->user()));
     }
 
     /**
      * DELETE = архівація (soft): канал і історія залишаються в БД.
      */
-    public function destroy(Channel $channel, ArchiveChannel $archiveChannel): ChannelResource
+    public function destroy(Request $request, Channel $channel, ArchiveChannel $archiveChannel): ChannelResource
     {
         Gate::authorize('archive', $channel);
 
         $archiveChannel->handle($channel);
 
-        return ChannelResource::make($this->present($channel));
-    }
-
-    private function present(Channel $channel): Channel
-    {
-        return $channel->load('myMembership')->loadCount('members');
+        return ChannelResource::make($channel->loadViewerContext($request->user()));
     }
 }

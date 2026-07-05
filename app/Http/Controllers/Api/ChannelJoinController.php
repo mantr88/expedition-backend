@@ -20,6 +20,6 @@ class ChannelJoinController extends Controller
 
         $joinChannel->handle($request->user(), $channel);
 
-        return ChannelResource::make($channel->load('myMembership')->loadCount('members'));
+        return ChannelResource::make($channel->loadViewerContext($request->user()));
     }
 }

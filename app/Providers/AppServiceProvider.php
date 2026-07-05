@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Support\Presence;
+use App\Support\ReverbPresence;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(Presence::class, ReverbPresence::class);
     }
 
     /**

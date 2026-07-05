@@ -45,6 +45,7 @@ it('serializes the exact ChannelResource contract shape', function () {
         'topic' => 'Головний канал',
         'archived_at' => null,
         'members_count' => 1,
+        'unread_count' => 0,
         'my_membership' => [
             'role' => 'owner',
             'last_read_message_id' => null,

@@ -74,4 +74,12 @@ class Message extends Model
     {
         return $this->hasMany(self::class, 'parent_id');
     }
+
+    /**
+     * @return HasMany<Mention, $this>
+     */
+    public function mentions(): HasMany
+    {
+        return $this->hasMany(Mention::class);
+    }
 }

@@ -2,16 +2,21 @@
 
 namespace App\Actions;
 
+use App\Events\Mentioned;
 use App\Events\MessageSent;
 use App\Models\Channel;
 use App\Models\Message;
 use App\Models\User;
+use App\Support\MentionDigestNotifier;
+use App\Support\MentionParser;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class SendMessage
 {
+    public function __construct(private MentionDigestNotifier $mentionDigestNotifier) {}
+
     /**
      * Ідемпотентне надсилання: повтор із тим самим client_message_id
      * (reconnect/ретрай) повертає існуюче повідомлення замість дубля.
@@ -42,6 +47,8 @@ class SendMessage
             // (ретрай) події не генерує — фронт уже отримав її першого разу.
             MessageSent::dispatch($message);
 
+            $this->recordMentions($message, $author, $channel);
+
             return $message;
         } catch (UniqueConstraintViolationException) {
             // Гонка двох одночасних ретраїв: перший вставив — віддаємо його.
@@ -54,6 +61,25 @@ class SendMessage
             throw ValidationException::withMessages([
                 'client_message_id' => 'The client message id has already been used.',
             ]);
+        }
+    }
+
+    /**
+     * Згадки @user (фаза B3): кандидати — лише члени каналу без автора;
+     * кожному згаданому — запис у mentions і подія на private-user.{id},
+     * офлайн-користувачу — debounced email-дайджест.
+     */
+    private function recordMentions(Message $message, User $author, Channel $channel): void
+    {
+        $mentionedUsers = MentionParser::mentioned($message->body, $channel->users()->get())
+            ->reject(fn (User $user): bool => $user->is($author));
+
+        foreach ($mentionedUsers as $user) {
+            $message->mentions()->create(['mentioned_user_id' => $user->id]);
+
+            Mentioned::dispatch($message, $user);
+
+            $this->mentionDigestNotifier->notify($user);
         }
     }
 
