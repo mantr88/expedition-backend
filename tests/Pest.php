@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Channel;
+use App\Models\ChannelMember;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -44,7 +47,20 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
-{
-    // ..
+/**
+ * Канал із членством користувача — базовий сетап feature-тестів B1.
+ */
+function makeChannelFor(
+    User $user,
+    string $role = 'member',
+    string $type = 'public',
+): Channel {
+    $channel = Channel::factory()->create(['type' => $type]);
+
+    ChannelMember::factory()
+        ->for($channel)
+        ->for($user)
+        ->create(['role' => $role]);
+
+    return $channel;
 }

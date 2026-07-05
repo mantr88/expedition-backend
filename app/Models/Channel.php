@@ -9,7 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property Carbon|null $archived_at
+ * @property-read int|null $members_count
+ */
 #[Fillable(['workspace_id', 'name', 'type', 'topic', 'created_by', 'archived_at'])]
 class Channel extends Model
 {
@@ -58,5 +65,31 @@ class Channel extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    /**
+     * Членство поточного автентифікованого користувача — для eager-load
+     * `my_membership` у ChannelResource без N+1.
+     *
+     * @return HasOne<ChannelMember, $this>
+     */
+    public function myMembership(): HasOne
+    {
+        return $this->hasOne(ChannelMember::class)->where('user_id', Auth::id());
+    }
+
+    public function membershipFor(User $user): ?ChannelMember
+    {
+        return $this->members()->where('user_id', $user->id)->first();
+    }
+
+    public function isMember(User $user): bool
+    {
+        return $this->members()->where('user_id', $user->id)->exists();
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived_at !== null;
     }
 }

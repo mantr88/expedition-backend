@@ -2,14 +2,21 @@
 
 namespace App\Models;
 
+use App\Support\MarkdownRenderer;
 use Database\Factories\MessageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $edited_at
+ * @property-read string $body_html
+ */
 #[Fillable(['channel_id', 'user_id', 'parent_id', 'client_message_id', 'body', 'type', 'edited_at'])]
 class Message extends Model
 {
@@ -24,6 +31,16 @@ class Message extends Model
         return [
             'edited_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Санітизований HTML: у БД зберігаємо лише raw, рендер — при серіалізації.
+     *
+     * @return Attribute<string, never>
+     */
+    protected function bodyHtml(): Attribute
+    {
+        return Attribute::get(fn (): string => MarkdownRenderer::render($this->body));
     }
 
     /**
