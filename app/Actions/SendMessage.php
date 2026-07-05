@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Events\MessageSent;
 use App\Models\Channel;
 use App\Models\Message;
 use App\Models\User;
@@ -29,13 +30,19 @@ class SendMessage
         try {
             // Транзакція (savepoint) — щоб після unique violation з'єднання
             // Postgres лишалося придатним для запиту-відкату нижче.
-            return DB::transaction(fn (): Message => $channel->messages()->create([
+            $message = DB::transaction(fn (): Message => $channel->messages()->create([
                 'user_id' => $author->id,
                 'parent_id' => $attributes['parent_id'] ?? null,
                 'client_message_id' => $attributes['client_message_id'],
                 'body' => $attributes['body'],
                 'type' => 'text',
             ]));
+
+            // Broadcast лише для реально створеного повідомлення: дублікат
+            // (ретрай) події не генерує — фронт уже отримав її першого разу.
+            MessageSent::dispatch($message);
+
+            return $message;
         } catch (UniqueConstraintViolationException) {
             // Гонка двох одночасних ретраїв: перший вставив — віддаємо його.
             $winner = $this->findDuplicate($author, $channel, $attributes['client_message_id']);

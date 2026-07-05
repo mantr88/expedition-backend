@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Events\MessageDeleted;
 use App\Models\Message;
 
 class DeleteMessage
@@ -12,5 +13,7 @@ class DeleteMessage
     public function handle(Message $message): void
     {
         $message->delete();
+
+        MessageDeleted::dispatch($message);
     }
 }

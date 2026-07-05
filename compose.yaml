@@ -88,6 +88,10 @@ services:
   reverb:
     <<: *app-base
     command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    restart: unless-stopped
+    # Graceful restart при деплої: Reverb на SIGTERM перестає приймати нові
+    # з'єднання й коректно закриває наявні; даємо йому час до SIGKILL.
+    stop_grace_period: 30s
     ports:
       - "8080:8080"
     healthcheck:
