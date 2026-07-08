@@ -123,4 +123,3 @@ it('supports /api/channels/dm endpoint alias', function () {
         ->assertJsonPath('type', 'dm')
         ->assertJsonPath('name', 'Іван Франко');
 });
-
