@@ -112,3 +112,15 @@ it('lists the dm with the counterpart name in the channels index', function () {
         ->assertJsonPath('data.0.type', 'dm')
         ->assertJsonPath('data.0.name', 'Марія Коваль');
 });
+
+it('supports /api/channels/dm endpoint alias', function () {
+    $me = User::factory()->create();
+    $other = User::factory()->create(['name' => 'Іван Франко']);
+
+    actingAs($me);
+    postJson('/api/channels/dm', ['user_id' => $other->id])
+        ->assertCreated()
+        ->assertJsonPath('type', 'dm')
+        ->assertJsonPath('name', 'Іван Франко');
+});
+

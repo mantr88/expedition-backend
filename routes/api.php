@@ -20,7 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
     // DM — той самий канал із type=dm; відкриття ідемпотентне
-    Route::post('direct-messages', DirectMessageController::class)->name('direct-messages.open');
+    Route::post('channels/dm', DirectMessageController::class)->name('direct-messages.open');
+    Route::post('direct-messages', DirectMessageController::class);
 
     // Канали (DELETE = архівація)
     Route::apiResource('channels', ChannelController::class);
