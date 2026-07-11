@@ -5,7 +5,7 @@ x-laravel-env: &laravel-env
   APP_ENV: local
   APP_DEBUG: "true"
   APP_URL: http://localhost:8000
-  FRONTEND_URL: http://localhost:5173
+  FRONTEND_URL: http://localhost:5174
   DB_CONNECTION: pgsql
   DB_HOST: postgres
   DB_PORT: "5432"
@@ -20,7 +20,7 @@ x-laravel-env: &laravel-env
   QUEUE_CONNECTION: redis
   BROADCAST_CONNECTION: reverb
   SESSION_DOMAIN: localhost
-  SANCTUM_STATEFUL_DOMAINS: localhost:5173,localhost:8000,127.0.0.1:5173,127.0.0.1:8000
+  SANCTUM_STATEFUL_DOMAINS: localhost:5173,localhost:5174,localhost:8000,127.0.0.1:5173,127.0.0.1:5174,127.0.0.1:8000
   REVERB_APP_ID: messenger
   REVERB_APP_KEY: messenger-local-key
   REVERB_APP_SECRET: messenger-local-secret

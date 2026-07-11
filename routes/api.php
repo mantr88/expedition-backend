@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelJoinController;
 use App\Http\Controllers\Api\ChannelMemberController;
 use App\Http\Controllers\Api\ChannelReadController;
 use App\Http\Controllers\Api\DirectMessageController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ReactionController;
+use App\Http\Controllers\Api\ThreadReplyController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
@@ -33,4 +36,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('channels.messages', MessageController::class)
         ->shallow()
         ->only(['index', 'store', 'update', 'destroy']);
+
+    // Вкладення: аплоад до повідомлення (B4)
+    Route::post('channels/{channel}/messages/{message}/attachments', [AttachmentController::class, 'store'])
+        ->name('messages.attachments.store');
+
+    // Реакції: toggle (B4)
+    Route::post('messages/{message}/reactions', [ReactionController::class, 'store'])
+        ->name('messages.reactions.toggle');
+
+    // Треди: список реплаїв (B4)
+    Route::get('messages/{message}/replies', [ThreadReplyController::class, 'index'])
+        ->name('messages.replies.index');
 });

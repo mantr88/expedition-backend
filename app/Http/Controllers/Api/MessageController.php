@@ -32,7 +32,9 @@ class MessageController extends Controller
 
         $messages = $channel->messages()
             ->whereNull('parent_id')
-            ->with('user')
+            ->with(['user', 'attachments', 'reactions'])
+            ->withCount('replies')
+            ->withMax('replies', 'created_at')
             ->when($before !== null, fn ($query) => $query->where('id', '<', $before))
             ->orderByDesc('id')
             ->limit($limit + 1)
@@ -53,7 +55,11 @@ class MessageController extends Controller
     {
         $message = $sendMessage->handle($request->user(), $channel, $request->validated());
 
-        return MessageResource::make($message->load('user'))
+        return MessageResource::make(
+            $message->load(['user', 'attachments', 'reactions'])
+                ->loadCount('replies')
+                ->loadMax('replies', 'created_at')
+        )
             ->response()
             ->setStatusCode($message->wasRecentlyCreated ? 201 : 200);
     }
@@ -62,7 +68,11 @@ class MessageController extends Controller
     {
         $editMessage->handle($message, $request->validated('body'));
 
-        return MessageResource::make($message->load('user'));
+        return MessageResource::make(
+            $message->load(['user', 'attachments', 'reactions'])
+                ->loadCount('replies')
+                ->loadMax('replies', 'created_at')
+        );
     }
 
     public function destroy(Message $message, DeleteMessage $deleteMessage): Response

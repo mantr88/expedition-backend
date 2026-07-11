@@ -20,7 +20,13 @@ return [
     'allowed_methods' => ['*'],
 
     // SPA-домен фронтенду; cookie-автентифікація вимагає точного origin (не "*").
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:5173')],
+    'allowed_origins' => [
+        env('FRONTEND_URL', 'http://localhost:5173'),
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
+    ],
 
     'allowed_origins_patterns' => [],
 

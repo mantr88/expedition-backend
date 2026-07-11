@@ -52,6 +52,8 @@ it('sends a message and serializes the exact MessageResource contract shape', fu
         'created_at' => $message->created_at->toISOString(),
         'reactions' => [],
         'attachments' => [],
+        'reply_count' => 0,
+        'last_reply_at' => null,
     ]);
 });
 

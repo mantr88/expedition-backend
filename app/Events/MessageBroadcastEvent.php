@@ -36,6 +36,10 @@ abstract class MessageBroadcastEvent implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-        return MessageResource::make($this->message->loadMissing('user'))->resolve();
+        return MessageResource::make(
+            $this->message->loadMissing(['user', 'attachments', 'reactions'])
+                ->loadCount('replies')
+                ->loadMax('replies', 'created_at')
+        )->resolve();
     }
 }
