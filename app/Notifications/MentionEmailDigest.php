@@ -34,6 +34,16 @@ class MentionEmailDigest extends Notification implements ShouldQueue
         $mentions = Mention::query()
             ->where('mentioned_user_id', $notifiable->id)
             ->where('created_at', '>=', $this->since)
+            ->whereHas('message.channel', function ($query) use ($notifiable): void {
+                // mute каналу вимикає email-дайджест про згадки в ньому (B5);
+                // відсутність запису членства не виключає згадку — виключаємо
+                // лише явний mute.
+                $query->whereDoesntHave('members', function ($membersQuery) use ($notifiable): void {
+                    $membersQuery
+                        ->where('user_id', $notifiable->id)
+                        ->where('notifications_level', 'mute');
+                });
+            })
             ->with(['message.channel', 'message.user'])
             ->get();
 
