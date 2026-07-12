@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelJoinController;
 use App\Http\Controllers\Api\ChannelMemberController;
+use App\Http\Controllers\Api\ChannelNotificationsController;
 use App\Http\Controllers\Api\ChannelReadController;
 use App\Http\Controllers\Api\DirectMessageController;
 use App\Http\Controllers\Api\MessageController;
@@ -31,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('channels', ChannelController::class);
     Route::post('channels/{channel}/join', ChannelJoinController::class)->name('channels.join');
     Route::post('channels/{channel}/read', ChannelReadController::class)->name('channels.read');
+    Route::patch('channels/{channel}/notifications', ChannelNotificationsController::class)->name('channels.notifications.update');
     Route::apiResource('channels.members', ChannelMemberController::class)->only(['index', 'store', 'destroy']);
 
     // Повідомлення: index/store вкладені в канал, update/destroy — shallow
