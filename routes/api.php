@@ -35,14 +35,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('channels/{channel}/notifications', ChannelNotificationsController::class)->name('channels.notifications.update');
     Route::apiResource('channels.members', ChannelMemberController::class)->only(['index', 'store', 'destroy']);
 
-    // Повідомлення: index/store вкладені в канал, update/destroy — shallow
+    // Повідомлення: index/store вкладені в канал, update/destroy — shallow.
+    // store лімітується (B5): не більше 60 надсилань/хв на користувача.
     Route::apiResource('channels.messages', MessageController::class)
         ->shallow()
-        ->only(['index', 'store', 'update', 'destroy']);
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->middlewareFor('store', 'throttle:messages');
 
-    // Вкладення: аплоад до повідомлення (B4)
+    // Вкладення: аплоад до повідомлення (B4). Лімітується (B5): 20/хв.
     Route::post('channels/{channel}/messages/{message}/attachments', [AttachmentController::class, 'store'])
-        ->name('messages.attachments.store');
+        ->name('messages.attachments.store')
+        ->middleware('throttle:uploads');
 
     // Реакції: toggle (B4)
     Route::post('messages/{message}/reactions', [ReactionController::class, 'store'])
@@ -52,6 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('messages/{message}/replies', [ThreadReplyController::class, 'index'])
         ->name('messages.replies.index');
 
-    // Пошук повідомлень (B5): full-text на Postgres, права — членство
-    Route::get('search/messages', SearchMessagesController::class)->name('search.messages');
+    // Пошук повідомлень (B5): full-text на Postgres, права — членство.
+    // Лімітується (B5): не більше 30 запитів/хв на користувача.
+    Route::get('search/messages', SearchMessagesController::class)
+        ->name('search.messages')
+        ->middleware('throttle:search');
 });
