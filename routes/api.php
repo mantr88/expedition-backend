@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ChannelReadController;
 use App\Http\Controllers\Api\DirectMessageController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ReactionController;
+use App\Http\Controllers\Api\SearchMessagesController;
 use App\Http\Controllers\Api\ThreadReplyController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Resources\UserResource;
@@ -48,4 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Треди: список реплаїв (B4)
     Route::get('messages/{message}/replies', [ThreadReplyController::class, 'index'])
         ->name('messages.replies.index');
+
+    // Пошук повідомлень (B5): full-text на Postgres, права — членство
+    Route::get('search/messages', SearchMessagesController::class)->name('search.messages');
 });
