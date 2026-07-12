@@ -46,7 +46,11 @@ it('throttles message sending after 60 requests per minute', function () {
         'client_message_id' => (string) Str::uuid(),
     ])
         ->assertStatus(429)
-        ->assertHeader('Retry-After');
+        ->assertHeader('Retry-After')
+        ->assertHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'")
+        ->assertHeader('X-Content-Type-Options', 'nosniff')
+        ->assertHeader('X-Frame-Options', 'DENY')
+        ->assertHeader('Referrer-Policy', 'no-referrer');
 });
 
 it('throttles search after 30 requests per minute', function () {
@@ -61,7 +65,11 @@ it('throttles search after 30 requests per minute', function () {
 
     getJson('/api/search/messages?q=launch')
         ->assertStatus(429)
-        ->assertHeader('Retry-After');
+        ->assertHeader('Retry-After')
+        ->assertHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'")
+        ->assertHeader('X-Content-Type-Options', 'nosniff')
+        ->assertHeader('X-Frame-Options', 'DENY')
+        ->assertHeader('Referrer-Policy', 'no-referrer');
 });
 
 it('does not throttle message reads', function () {

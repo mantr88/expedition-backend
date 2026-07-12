@@ -99,6 +99,20 @@ it('excludes soft-deleted messages', function () {
         ->assertJsonCount(0, 'data');
 });
 
+it('escapes LIKE wildcard characters in the query (sqlite fallback)', function () {
+    $user = User::factory()->create();
+    $channel = makeChannelFor($user);
+    $match = Message::factory()->for($channel)->create(['body' => 'progress 100% done']);
+    Message::factory()->for($channel)->create(['body' => 'progress done']);
+
+    actingAs($user);
+
+    getJson('/api/search/messages?q=100%25')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $match->id);
+});
+
 it('validates the query string', function () {
     actingAs(User::factory()->create());
 

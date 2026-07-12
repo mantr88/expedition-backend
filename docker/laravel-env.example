@@ -53,3 +53,7 @@ VITE_REVERB_PORT="${REVERB_PORT}"
 VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 
 MAIL_MAILER=log
+
+# моніторинг Pulse — увімкнено лише на dev; у production вимкнено за
+# замовчуванням, дашборд /pulse захищений viewPulse-гейтом
+PULSE_ENABLED=false

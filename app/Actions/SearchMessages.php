@@ -60,6 +60,10 @@ class SearchMessages
             return;
         }
 
-        $builder->whereLike('body', '%'.$term.'%');
+        // LIKE-спецсимволи (%, _) у пошуковому терміні екрануємо, інакше
+        // вони діють як SQL-вайлдкарди й розширюють збіги ширше запиту.
+        $escaped = addcslashes($term, '%_\\');
+
+        $builder->whereRaw('body LIKE ? ESCAPE ?', ['%'.$escaped.'%', '\\']);
     }
 }

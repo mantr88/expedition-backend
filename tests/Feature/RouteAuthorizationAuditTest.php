@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 /*
  * Аудит авторизації (фаза B5): жоден api-роут, крім явного allowlist,
  * не лишається без auth:sanctum. «Голий» роут = падіння CI.
+ * Аудит охоплює лише api/*; non-api поверхня (/up, /pulse,
+ * livewire-роути) — поза скоупом, /pulse захищений viewPulse-гейтом.
  */
 
 it('protects every api route with sanctum auth except the allowlist', function () {
