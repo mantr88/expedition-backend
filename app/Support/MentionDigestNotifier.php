@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Channel;
 use App\Models\User;
 use App\Notifications\MentionEmailDigest;
 use Illuminate\Support\Facades\Cache;
@@ -18,8 +19,14 @@ class MentionDigestNotifier
 
     public function __construct(private Presence $presence) {}
 
-    public function notify(User $user): void
+    public function notify(User $user, Channel $channel): void
     {
+        // mute каналу вимикає email-дайджест про згадки в ньому;
+        // realtime-подія Mentioned не чіпається (контракт B5).
+        if ($channel->membershipFor($user)?->notifications_level === 'mute') {
+            return;
+        }
+
         if ($this->presence->isOnline($user)) {
             return;
         }

@@ -157,3 +157,25 @@ it('is not broken by injection-like bodies', function () {
     expect(Mention::query()->where('mentioned_user_id', $mentioned->id)->count())->toBe(1);
     Event::assertDispatchedTimes(Mentioned::class, 1);
 });
+
+it('does not queue an email digest for a mention in a muted channel', function () {
+    Notification::fake();
+    fakePresence(online: false);
+
+    $author = User::factory()->create();
+    $mentioned = User::factory()->create(['name' => 'Мьютнутий Канал']);
+    $channel = makeChannelFor($author);
+    $channel->members()->create([
+        'user_id' => $mentioned->id,
+        'role' => 'member',
+        'notifications_level' => 'mute',
+    ]);
+
+    actingAs($author);
+
+    sendMessageWithBody($channel->id, 'агов @Мьютнутий Канал')->assertCreated();
+
+    // Запис згадки і realtime-подія лишаються — mute стосується лише email.
+    expect(Mention::query()->where('mentioned_user_id', $mentioned->id)->count())->toBe(1);
+    Notification::assertNothingSent();
+});
