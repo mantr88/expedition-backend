@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Message;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,7 @@ class MessageResource extends JsonResource
             'reactions' => $this->aggregateReactions(),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
             'reply_count' => $this->whenCounted('replies', fn (): int => (int) $this->replies_count, 0),
-            'last_reply_at' => $this->whenAggregated('replies', 'created_at', 'max', fn (): ?string => $this->replies_max_created_at ? \Carbon\Carbon::parse($this->replies_max_created_at)->toISOString() : null, null),
+            'last_reply_at' => $this->whenAggregated('replies', 'created_at', 'max', fn (): ?string => $this->replies_max_created_at ? Carbon::parse($this->replies_max_created_at)->toISOString() : null, null),
         ];
     }
 

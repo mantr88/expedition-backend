@@ -48,7 +48,7 @@ class GenerateAttachmentThumbnail implements ShouldQueue
         $image->scaleDown($maxDim, $maxDim);
 
         $extension = pathinfo($originalPath, PATHINFO_EXTENSION);
-        $thumbPath = Str::replaceLast('.' . $extension, '_thumb.' . $extension, $originalPath);
+        $thumbPath = Str::replaceLast('.'.$extension, '_thumb.'.$extension, $originalPath);
 
         $encoded = match ($this->attachment->mime) {
             'image/png' => $image->toPng(),

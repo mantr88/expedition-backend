@@ -18,11 +18,11 @@ class AttachmentFactory extends Factory
     {
         return [
             'message_id' => Message::factory(),
-            'path' => 'attachments/' . fake()->uuid() . '.jpg',
+            'path' => 'attachments/'.fake()->uuid().'.jpg',
             'thumb_path' => null,
             'mime' => 'image/jpeg',
             'size' => fake()->numberBetween(1024, 5_000_000),
-            'original_name' => fake()->word() . '.jpg',
+            'original_name' => fake()->word().'.jpg',
             'width' => 1920,
             'height' => 1080,
         ];
@@ -31,9 +31,9 @@ class AttachmentFactory extends Factory
     public function document(): static
     {
         return $this->state([
-            'path' => 'attachments/' . fake()->uuid() . '.pdf',
+            'path' => 'attachments/'.fake()->uuid().'.pdf',
             'mime' => 'application/pdf',
-            'original_name' => fake()->word() . '.pdf',
+            'original_name' => fake()->word().'.pdf',
             'width' => null,
             'height' => null,
         ]);

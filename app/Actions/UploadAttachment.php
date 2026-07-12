@@ -18,7 +18,7 @@ class UploadAttachment
     {
         $path = $file->storeAs(
             "attachments/channels/{$message->channel_id}",
-            Str::uuid() . '.' . $file->getClientOriginalExtension(),
+            Str::uuid().'.'.$file->getClientOriginalExtension(),
         );
 
         $width = null;
