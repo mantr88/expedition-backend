@@ -103,7 +103,9 @@ it('escapes LIKE wildcard characters in the query (sqlite fallback)', function (
     $user = User::factory()->create();
     $channel = makeChannelFor($user);
     $match = Message::factory()->for($channel)->create(['body' => 'progress 100% done']);
-    Message::factory()->for($channel)->create(['body' => 'progress done']);
+    // Decoy збігається з неекранованим LIKE '%100%%' ("містить 100"),
+    // але не з літеральним '100%' — ловить регресію екранування.
+    Message::factory()->for($channel)->create(['body' => 'progress 1005 done']);
 
     actingAs($user);
 
