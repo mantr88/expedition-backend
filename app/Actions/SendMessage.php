@@ -79,7 +79,7 @@ class SendMessage
 
             Mentioned::dispatch($message, $user);
 
-            $this->mentionDigestNotifier->notify($user);
+            $this->mentionDigestNotifier->notify($user, $channel);
         }
     }
 

@@ -8,3 +8,10 @@ parameters:
         - app
         - database
         - routes
+
+    excludePaths:
+        # Vendor-published Pulse migration (unmodified upstream file): the
+        # driver() match is exhaustive for supported DB drivers at runtime,
+        # but Larastan can't narrow the generic `string` return type, so it
+        # flags a false-positive unhandled match arm.
+        - database/migrations/*_create_pulse_tables.php

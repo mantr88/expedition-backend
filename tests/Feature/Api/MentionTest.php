@@ -157,3 +157,70 @@ it('is not broken by injection-like bodies', function () {
     expect(Mention::query()->where('mentioned_user_id', $mentioned->id)->count())->toBe(1);
     Event::assertDispatchedTimes(Mentioned::class, 1);
 });
+
+it('does not queue an email digest for a mention in a muted channel', function () {
+    Notification::fake();
+    Event::fake([Mentioned::class]);
+    fakePresence(online: false);
+
+    $author = User::factory()->create();
+    $mentioned = User::factory()->create(['name' => 'Мьютнутий Канал']);
+    $channel = makeChannelFor($author);
+    $channel->members()->create([
+        'user_id' => $mentioned->id,
+        'role' => 'member',
+        'notifications_level' => 'mute',
+    ]);
+
+    actingAs($author);
+
+    sendMessageWithBody($channel->id, 'агов @Мьютнутий Канал')->assertCreated();
+
+    // Запис згадки і realtime-подія лишаються — mute стосується лише email.
+    expect(Mention::query()->where('mentioned_user_id', $mentioned->id)->count())->toBe(1);
+    Notification::assertNothingSent();
+    Event::assertDispatched(Mentioned::class);
+});
+
+it('excludes muted channels from the mention digest email while keeping non-muted ones', function () {
+    Notification::fake();
+    fakePresence(online: false);
+
+    $author = User::factory()->create();
+    $mentioned = User::factory()->create(['name' => 'Двоканальний Юзер']);
+
+    $mutedChannel = makeChannelFor($author);
+    $mutedChannel->update(['name' => 'Замьючений Канал']);
+    $mutedChannel->members()->create([
+        'user_id' => $mentioned->id,
+        'role' => 'member',
+        'notifications_level' => 'mute',
+    ]);
+
+    $activeChannel = makeChannelFor($author);
+    $activeChannel->update(['name' => 'Активний Канал']);
+    $activeChannel->members()->create([
+        'user_id' => $mentioned->id,
+        'role' => 'member',
+    ]);
+
+    actingAs($author);
+
+    sendMessageWithBody($mutedChannel->id, 'агов @Двоканальний Юзер')->assertCreated();
+    sendMessageWithBody($activeChannel->id, 'агов @Двоканальний Юзер')->assertCreated();
+
+    Notification::assertSentToTimes($mentioned, MentionEmailDigest::class, 1);
+
+    $notification = null;
+    Notification::assertSentTo($mentioned, MentionEmailDigest::class, function (MentionEmailDigest $sent) use (&$notification): bool {
+        $notification = $sent;
+
+        return true;
+    });
+
+    $mailLines = implode("\n", $notification->toMail($mentioned)->introLines);
+
+    expect($mailLines)
+        ->toContain('Активний Канал')
+        ->not->toContain('Замьючений Канал');
+});

@@ -4,10 +4,12 @@ use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelJoinController;
 use App\Http\Controllers\Api\ChannelMemberController;
+use App\Http\Controllers\Api\ChannelNotificationsController;
 use App\Http\Controllers\Api\ChannelReadController;
 use App\Http\Controllers\Api\DirectMessageController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ReactionController;
+use App\Http\Controllers\Api\SearchMessagesController;
 use App\Http\Controllers\Api\ThreadReplyController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Resources\UserResource;
@@ -30,16 +32,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('channels', ChannelController::class);
     Route::post('channels/{channel}/join', ChannelJoinController::class)->name('channels.join');
     Route::post('channels/{channel}/read', ChannelReadController::class)->name('channels.read');
+    Route::patch('channels/{channel}/notifications', ChannelNotificationsController::class)->name('channels.notifications.update');
     Route::apiResource('channels.members', ChannelMemberController::class)->only(['index', 'store', 'destroy']);
 
-    // Повідомлення: index/store вкладені в канал, update/destroy — shallow
+    // Повідомлення: index/store вкладені в канал, update/destroy — shallow.
+    // store лімітується (B5): не більше 60 надсилань/хв на користувача.
     Route::apiResource('channels.messages', MessageController::class)
         ->shallow()
-        ->only(['index', 'store', 'update', 'destroy']);
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->middlewareFor('store', 'throttle:messages');
 
-    // Вкладення: аплоад до повідомлення (B4)
+    // Вкладення: аплоад до повідомлення (B4). Лімітується (B5): 20/хв.
     Route::post('channels/{channel}/messages/{message}/attachments', [AttachmentController::class, 'store'])
-        ->name('messages.attachments.store');
+        ->name('messages.attachments.store')
+        ->middleware('throttle:uploads');
 
     // Реакції: toggle (B4)
     Route::post('messages/{message}/reactions', [ReactionController::class, 'store'])
@@ -48,4 +54,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Треди: список реплаїв (B4)
     Route::get('messages/{message}/replies', [ThreadReplyController::class, 'index'])
         ->name('messages.replies.index');
+
+    // Пошук повідомлень (B5): full-text на Postgres, права — членство.
+    // Лімітується (B5): не більше 30 запитів/хв на користувача.
+    Route::get('search/messages', SearchMessagesController::class)
+        ->name('search.messages')
+        ->middleware('throttle:search');
 });

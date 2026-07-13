@@ -53,3 +53,8 @@ VITE_REVERB_PORT="${REVERB_PORT}"
 VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 
 MAIL_MAILER=log
+
+# моніторинг Pulse: без цієї змінної config/pulse.php вмикає рекордери
+# (enabled=true) — у production задавайте false явно. Дашборд /pulse поза
+# local закритий (403) стандартною авторизацією Pulse (гейт viewPulse).
+PULSE_ENABLED=false
