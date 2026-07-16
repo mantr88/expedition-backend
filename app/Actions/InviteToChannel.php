@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Events\AddedToChannel;
+use App\Events\MemberAdded;
 use App\Models\Channel;
 use App\Models\ChannelMember;
 use App\Models\User;
@@ -22,6 +23,7 @@ class InviteToChannel
 
         if ($membership->wasRecentlyCreated) {
             AddedToChannel::dispatch($channel, $invitee);
+            MemberAdded::dispatch($membership);
         }
 
         return $membership;

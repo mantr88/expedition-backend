@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Events\MemberRemoved;
 use App\Models\Channel;
 use App\Models\User;
 
@@ -13,6 +14,10 @@ class LeaveChannel
      */
     public function handle(Channel $channel, User $member): void
     {
-        $channel->members()->where('user_id', $member->id)->delete();
+        $deleted = $channel->members()->where('user_id', $member->id)->delete();
+
+        if ($deleted) {
+            MemberRemoved::dispatch($channel->id, $member->id);
+        }
     }
 }
