@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property Carbon|null $edited_at
  * @property-read string $body_html
+ * @property-read string|null $replies_max_created_at Присутнє лише після withMax('replies', 'created_at').
  */
 #[Fillable(['channel_id', 'user_id', 'parent_id', 'client_message_id', 'body', 'type', 'edited_at'])]
 class Message extends Model
