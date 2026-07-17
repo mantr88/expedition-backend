@@ -12,9 +12,7 @@ class MemberRemoved implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public int $channel_id, public int $user_id)
-    {
-    }
+    public function __construct(public int $channel_id, public int $user_id) {}
 
     public function broadcastOn(): PrivateChannel
     {

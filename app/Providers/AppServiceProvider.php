@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('messages', fn (Request $request) => Limit::perMinute(60)->by($this->rateLimitKeyFor($request)));
         RateLimiter::for('uploads', fn (Request $request) => Limit::perMinute(20)->by($this->rateLimitKeyFor($request)));
         RateLimiter::for('search', fn (Request $request) => Limit::perMinute(30)->by($this->rateLimitKeyFor($request)));
+        RateLimiter::for('invitations', fn (Request $request) => Limit::perMinute(10)->by($this->rateLimitKeyFor($request)));
     }
 
     /**

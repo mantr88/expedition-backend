@@ -29,6 +29,7 @@ it('serializes the exact UserResource contract shape', function () {
         'avatar_url' => 'https://cdn.example.com/avatars/1.png',
         'status' => 'active',
         'last_seen_at' => '2026-07-03T12:00:00.000000Z',
+        'is_pending' => false,
     ]);
 });
 

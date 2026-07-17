@@ -93,6 +93,7 @@ it('returns the UserResource shape as presence member info on presence-channel.{
             'avatar_url' => $user->avatar_url,
             'status' => $user->status,
             'last_seen_at' => $user->last_seen_at?->toISOString(),
+            'is_pending' => false,
         ]);
 });
 

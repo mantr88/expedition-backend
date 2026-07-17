@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ChannelMemberController;
 use App\Http\Controllers\Api\ChannelNotificationsController;
 use App\Http\Controllers\Api\ChannelReadController;
 use App\Http\Controllers\Api\DirectMessageController;
+use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ReactionController;
 use App\Http\Controllers\Api\SearchMessagesController;
@@ -23,6 +24,7 @@ Route::get('/health', fn () => response()->json(['status' => 'ok', 'service' => 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', fn (Request $request) => UserResource::make($request->user()));
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/invitations', [InvitationController::class, 'store'])->middleware('throttle:invitations');
 
     // DM — той самий канал із type=dm; відкриття ідемпотентне
     Route::post('channels/dm', DirectMessageController::class)->name('direct-messages.open');

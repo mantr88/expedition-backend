@@ -42,6 +42,7 @@ it('sends a message and serializes the exact MessageResource contract shape', fu
             'avatar_url' => $user->avatar_url,
             'status' => $user->status,
             'last_seen_at' => $user->last_seen_at?->toISOString(),
+            'is_pending' => false,
         ],
         'parent_id' => null,
         'body_html' => 'Привіт, <strong>команда</strong>!',

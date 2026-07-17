@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             'avatar_url' => $this->avatar_url,
             'status' => $this->status,
             'last_seen_at' => $this->last_seen_at?->toISOString(),
+            'is_pending' => $this->password === null,
         ];
     }
 }

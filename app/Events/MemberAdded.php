@@ -14,9 +14,7 @@ class MemberAdded implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public ChannelMember $membership)
-    {
-    }
+    public function __construct(public ChannelMember $membership) {}
 
     public function broadcastOn(): PrivateChannel
     {
