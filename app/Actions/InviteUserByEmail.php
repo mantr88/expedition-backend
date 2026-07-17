@@ -31,7 +31,7 @@ class InviteUserByEmail
         }
 
         if ($user->password === null) {
-            $token = Password::broker()->createToken($user);
+            $token = Password::createToken($user);
             Mail::to($user)->queue(new UserInvitedMail($user, $token));
         }
 

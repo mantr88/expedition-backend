@@ -19,6 +19,9 @@ class MemberRemoved implements ShouldBroadcast
         return new PrivateChannel("channel.{$this->channel_id}");
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function broadcastWith(): array
     {
         return [

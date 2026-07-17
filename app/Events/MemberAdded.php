@@ -21,6 +21,9 @@ class MemberAdded implements ShouldBroadcast
         return new PrivateChannel("channel.{$this->membership->channel_id}");
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function broadcastWith(): array
     {
         return ChannelMemberResource::make($this->membership->load('user'))->resolve();

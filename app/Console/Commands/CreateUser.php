@@ -13,7 +13,7 @@ class CreateUser extends Command
 
     protected $description = 'Create a new active user';
 
-    public function handle()
+    public function handle(): int
     {
         $name = $this->argument('name');
         $email = $this->argument('email');
