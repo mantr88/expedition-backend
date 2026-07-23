@@ -32,7 +32,7 @@ class MessageController extends Controller
 
         $messages = $channel->messages()
             ->whereNull('parent_id')
-            ->with(['user', 'attachments', 'reactions'])
+            ->with(['user', 'attachments', 'reactions.user'])
             ->withCount('replies')
             ->withMax('replies', 'created_at')
             ->when($before !== null, fn ($query) => $query->where('id', '<', $before))
@@ -56,7 +56,7 @@ class MessageController extends Controller
         $message = $sendMessage->handle($request->user(), $channel, $request->validated());
 
         return MessageResource::make(
-            $message->load(['user', 'attachments', 'reactions'])
+            $message->load(['user', 'attachments', 'reactions.user'])
                 ->loadCount('replies')
                 ->loadMax('replies', 'created_at')
         )
@@ -69,7 +69,7 @@ class MessageController extends Controller
         $editMessage->handle($message, $request->validated('body'));
 
         return MessageResource::make(
-            $message->load(['user', 'attachments', 'reactions'])
+            $message->load(['user', 'attachments', 'reactions.user'])
                 ->loadCount('replies')
                 ->loadMax('replies', 'created_at')
         );

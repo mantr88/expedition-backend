@@ -41,9 +41,9 @@ class MessageResource extends JsonResource
     }
 
     /**
-     * Агрегація реакцій: [{ emoji, count, reacted_by_me }] — per-viewer.
+     * Агрегація реакцій: [{ emoji, count, reacted_by_me, users }] — per-viewer.
      *
-     * @return list<array{emoji: string, count: int, reacted_by_me: bool}>
+     * @return list<array{emoji: string, count: int, reacted_by_me: bool, users: list<string>}>
      */
     private function aggregateReactions(): array
     {
@@ -59,6 +59,7 @@ class MessageResource extends JsonResource
                 'emoji' => $emoji,
                 'count' => $group->count(),
                 'reacted_by_me' => $group->contains('user_id', $userId),
+                'users' => $group->map(fn ($r) => $r->user?->name)->filter()->values()->all(),
             ])
             ->values()
             ->all();

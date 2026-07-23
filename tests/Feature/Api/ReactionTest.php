@@ -37,6 +37,7 @@ it('adds a reaction to a message', function () {
             && $event->emoji === '👍'
             && $event->count === 1
             && $event->userId === $user->id
+            && $event->userName === $user->name
             && $event->action === 'added';
     });
 });
@@ -75,7 +76,8 @@ it('tracks reacted_by_me correctly per user in MessageResource', function () {
     expect($reactions)->toHaveCount(1)
         ->and($reactions[0]['emoji'])->toBe('👍')
         ->and($reactions[0]['count'])->toBe(1)
-        ->and($reactions[0]['reacted_by_me'])->toBeFalse();
+        ->and($reactions[0]['reacted_by_me'])->toBeFalse()
+        ->and($reactions[0]['users'])->toBe([$other->name]);
 
     Reaction::factory()->for($message)->for($user)->create(['emoji' => '👍']);
 
@@ -83,7 +85,8 @@ it('tracks reacted_by_me correctly per user in MessageResource', function () {
     $reactions = $response->json('data.0.reactions');
 
     expect($reactions[0]['count'])->toBe(2)
-        ->and($reactions[0]['reacted_by_me'])->toBeTrue();
+        ->and($reactions[0]['reacted_by_me'])->toBeTrue()
+        ->and($reactions[0]['users'])->toContain($other->name, $user->name);
 });
 
 it('forbids non-members to react', function () {

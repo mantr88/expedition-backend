@@ -36,7 +36,7 @@ class ToggleReaction
 
         $count = Reaction::where('message_id', $message->id)->where('emoji', $emoji)->count();
 
-        ReactionToggled::dispatch($message, $emoji, $count, $user->id, $action);
+        ReactionToggled::dispatch($message, $emoji, $count, $user->id, $action, $user->name);
 
         return ['action' => $action, 'count' => $count];
     }

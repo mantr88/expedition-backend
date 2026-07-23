@@ -16,7 +16,7 @@ class ThreadReplyController extends Controller
         $after = $request->validated('after');
 
         $replies = $message->replies()
-            ->with(['user', 'attachments', 'reactions'])
+            ->with(['user', 'attachments', 'reactions.user'])
             ->when($after !== null, fn ($query) => $query->where('id', '>', $after))
             ->orderBy('id')
             ->limit($limit + 1)

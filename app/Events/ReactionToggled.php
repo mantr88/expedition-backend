@@ -23,6 +23,7 @@ class ReactionToggled implements ShouldBroadcast
         public int $count,
         public int $userId,
         public string $action,
+        public ?string $userName = null,
     ) {}
 
     public function broadcastOn(): PrivateChannel
@@ -45,6 +46,7 @@ class ReactionToggled implements ShouldBroadcast
             'emoji' => $this->emoji,
             'count' => $this->count,
             'user_id' => $this->userId,
+            'user_name' => $this->userName,
             'action' => $this->action,
         ];
     }

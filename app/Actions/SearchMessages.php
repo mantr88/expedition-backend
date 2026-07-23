@@ -29,7 +29,7 @@ class SearchMessages
             ->with([
                 'user',
                 'attachments',
-                'reactions',
+                'reactions.user',
                 'channel' => fn ($q) => $q->withCount('members'),
                 'channel.dmCounterpart.user',
             ])
